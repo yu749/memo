@@ -65,29 +65,8 @@ class MainActivity : AppCompatActivity() {
                 refresh()
             }
         })
-
-
-//        realm.addChangeListener {
-//            // 変更があった時にリストをアップデートする
-//            updateList(it.where(Memo::class.java).findAll())
-//        }
-//        realm.removeChangeListener {
-//            updateList(it.where(Memo::class.java).findAll())
-//        }
-//        // 初回表示時にリストを表示
-//        realm.executeTransaction {
-//            updateList(it.where(Memo::class.java).findAll())
-//        }
         refresh()
     }
-//    private fun updateList(memoList: List<Memo>) {
-//        val items = memoList.map { it.name }
-//        // 一度クリアしてから新しいメモに入れ替える
-//        adapter.memoList.clear()
-//        adapter.memoList.addAll(items)
-//        // データに変更があったことをadapterに通知
-//        adapter.notifyDataSetChanged()
-//    }
     private fun refresh() {
         val list = realm.copyFromRealm(realm.where(Memo::class.java).findAll()).sortedBy { it.name }
         adapter.memoList = list

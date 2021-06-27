@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_memo.view.*
 
 class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
     lateinit var listener: OnItemClickListener
@@ -40,7 +39,5 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
-
-
 
 }

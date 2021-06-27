@@ -3,5 +3,6 @@
     <string name="edit_text">メモを入力</string>
     <string name="add_button_text">追加</string>
     <string name="delete_button_text">削除</string>
+    <string name="action_settings">通知</string>
 
 </resources>

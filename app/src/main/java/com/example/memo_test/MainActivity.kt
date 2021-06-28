@@ -60,12 +60,15 @@ class MainActivity : AppCompatActivity() {
                 it.copyFromRealm(memo)
             }
             refresh()
+            Toast.makeText(applicationContext, "${text}が追加されました", Toast.LENGTH_SHORT).show()
             // テキストを空にする
             editText.text.clear()
         }
 
         adapter.setOnItemClickListener(object:MemoListAdapter.OnItemClickListener{
             override fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int){
+
+                Toast.makeText(applicationContext, "${memoText}が削除されました", Toast.LENGTH_SHORT).show()
                 //realmの削除
                 val target = realm.where(Memo::class.java).equalTo("name", memoText).findFirst()
                 realm.executeTransaction {
@@ -77,6 +80,24 @@ class MainActivity : AppCompatActivity() {
                 refresh()
             }
         })
+
+        adapter.setOnItemClickListener(object:MemoListAdapter.OnViewClickListener{
+            override fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int) {
+                createNotificationChannel()
+                val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.notification_icon)    /// 表示されるアイコン
+                        .setContentTitle("ハローkotlin!!")                  /// 通知タイトル
+                        .setContentText("今日も1日がんばるぞい!")           /// 通知コンテンツ
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)   /// 通知の優先度
+
+                var notificationId = 0
+                with(NotificationManagerCompat.from(applicationContext)) {
+                    notify(notificationId, builder.build())
+                    notificationId += 1
+                }
+            }
+        })
+
         refresh()
     }
     private fun refresh() {
@@ -85,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
+// ツールバー
     override fun onCreateOptionsMenu(menu:Menu): Boolean {
         //ヘッダ用のレイアウトファイルと紐づける
 //        menuInflater.inflate(R.menu.menu_main, menu)
@@ -97,7 +119,7 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)    /// 表示されるアイコン
+                .setSmallIcon(R.drawable.notification_icon)    /// 表示されるアイコン
                 .setContentTitle("ハローkotlin!!")                  /// 通知タイトル
                 .setContentText("今日も1日がんばるぞい!")           /// 通知コンテンツ
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)   /// 通知の優先度

@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
+    lateinit var viewlistener: OnViewClickListener
     lateinit var listener: OnItemClickListener
     var memoList = listOf<Memo>()
 
@@ -19,7 +20,10 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
         val textView = holder.itemView.findViewById<TextView>(R.id.memo_text_view)
         textView.text = memoList[position].name
-
+        // リスナー
+        holder.memoText.setOnClickListener {
+            viewlistener.onItemClickListener(it, position, memoList[position].name, memoList.size)
+        }
         holder.deleteButton.setOnClickListener {
             listener.onItemClickListener(it, position, memoList[position].name, memoList.size)
         }
@@ -27,15 +31,21 @@ class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
 
     override fun getItemCount(): Int = memoList.size
 
-    class MemoViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class MemoViewHolder(val view: View): RecyclerView.ViewHolder(view) {
         val memoText = view.findViewById<TextView>(R.id.memo_text_view)
         val deleteButton = view.findViewById<Button>(R.id.delete_button)
     }
 
+    interface OnViewClickListener {
+        fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int)
+    }
     interface OnItemClickListener {
         fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int)
     }
 
+    fun setOnItemClickListener(listener: OnViewClickListener) {
+        this.viewlistener = listener
+    }
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }

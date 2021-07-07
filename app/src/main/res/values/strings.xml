@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">memo_test</string>
-    <string name="edit_text">メモを入力</string>
-    <string name="add_button_text">追加</string>
-    <string name="delete_button_text">削除</string>
-    <string name="action_settings">通知</string>
+    <string name = "app_name">memo_test</string>
+    <string name = "edit_text">メモを入力</string>
+    <string name = "add_button_text">追加</string>
+    <string name = "delete_button_text">削除</string>
+    <string name = "action_settings">通知</string>
+    <string name = "notification_title">期日が近づいています</string>
 
 </resources>

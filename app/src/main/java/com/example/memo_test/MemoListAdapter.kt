@@ -8,16 +8,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MemoListAdapter: RecyclerView.Adapter<MemoListAdapter.MemoViewHolder>() {
+    // リスナー変数
     lateinit var viewlistener: OnViewClickListener
     lateinit var listener: OnItemClickListener
     var memoList = listOf<Memo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoViewHolder {
+        // 参照先のレイアウトにしたがってViewHolderを作成
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_memo, parent, false)
         return MemoViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MemoViewHolder, position: Int) {
+        // textViewにテキストを入れる
         val textView = holder.itemView.findViewById<TextView>(R.id.memo_text_view)
         textView.text = memoList[position].name
         // リスナー

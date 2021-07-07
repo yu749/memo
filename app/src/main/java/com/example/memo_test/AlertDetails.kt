@@ -8,53 +8,63 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings.Global.getString
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 
-class AlertDetails  {
+class AlertDetails: BroadcastReceiver() {
 
-//    val textTitle = getString(R.string.app_name)
-//    private val CHANNEL_ID = "default"
-//
-//    // 通知のタップアクションを追加
-//    val intent = Intent(this, AlertDetails::class.java).apply {
-//        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//    }
-//    // タップアクション追加に必要なオブジェクト
-//    val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-//
-//    // 通知コンテンツ設定
-//    var builder = NotificationCompat.Builder(this, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.notification_icon)
-//            .setContentTitle("memo_test")
-//            .setContenttext(textContent)
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            // 通知タップアクションに必要なオブジェクトをセットする
-//            .setContentIntent(pendingIntent)
-//            .setAutoCancel(true)
-//
-//    // チャネル作成と重要度の設定
-//    private fun createNotificationChannel() {
-//        // Android7.1以下との互換性を保つため
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val name = getString(R.string.channel_name)
-//            val importance = NotificationManager.IMPORTANCE_DEFAULT
-//            val descriptionText = getString(R.string.channel_description)
-//            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-//                    description = descriptionText
-//            }
-//            // 通知チャネルをシステムに登録
+    lateinit var notificationManager: NotificationManager
+
+    override fun onReceive(context: Context, intent: Intent) {
+        Toast.makeText(context,"Received", Toast.LENGTH_LONG).show()
+
+        val text = intent.getStringExtra("TEXT_KEY") ?: "データがありません！"
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        createNotificationChannel()
+//        if (text != null) {
+            deliverNotification(context, text)
+//        }
+    }
+
+    // 通知を指定した時間に返す
+    private fun deliverNotification(context: Context, text: String) {
+        val contentIntent = Intent(context, MainActivity::class.java)
+        val contentPendingIntent = PendingIntent.getActivity(context, 0, contentIntent, 0)
+
+        val title = context.getString(R.string.notification_title)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.notification_icon)        /// 表示されるアイコン
+                        .setContentTitle(title)                  /// 通知タイトル
+                        .setContentText(text)             /// 通知コンテンツ
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)  /// 通知の優先度
+                        .setContentIntent(contentPendingIntent)                   /// 通知をタップした際のIntent
+                        .setAutoCancel(true)
+
+        var notificationId = 0
+                with(NotificationManagerCompat.from(context)) {
+                    notify(notificationId, builder.build())
+                    notificationId += 1
+                }
+    }
+
+    val CHANNEL_ID = "channel_id"
+    val channel_name = "channel_name"
+    val channel_description = "channel_description "
+
+    fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = channel_name
+            val descriptionText = channel_description
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            /// チャネルを登録
 //            val notificationManager: NotificationManager =
 //                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//                    notificationManager.createNotificationChannel(channel)
-//        }
-//    }
-
-
-    // 通知を表示
-//    with(NotificationManagerCompat.from(this)) {
-//        notify(notificationId, builder.build())
-//    }
-
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
 }

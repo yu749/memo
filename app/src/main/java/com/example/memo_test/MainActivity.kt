@@ -1,5 +1,6 @@
 package com.example.memo_test
 
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -82,19 +84,30 @@ class MainActivity : AppCompatActivity() {
         })
 
         adapter.setOnItemClickListener(object:MemoListAdapter.OnViewClickListener{
+            // APIレベルが19以下のため記述
+            @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int) {
-                createNotificationChannel()
-                val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.notification_icon)    /// 表示されるアイコン
-                        .setContentTitle("ハローkotlin!!")                  /// 通知タイトル
-                        .setContentText("今日も1日がんばるぞい!")           /// 通知コンテンツ
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)   /// 通知の優先度
+                // タイマーをセット
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = System.currentTimeMillis()
+                calendar.add(Calendar.SECOND, 5)
 
-                var notificationId = 0
-                with(NotificationManagerCompat.from(applicationContext)) {
-                    notify(notificationId, builder.build())
-                    notificationId += 1
-                }
+                val alertintent = Intent(applicationContext, AlertDetails::class.java)
+                val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
+                // メモテキストをセット
+                alertintent.putExtra("TEXT_KEY", memoText)
+
+                val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+                am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
+                Toast.makeText(applicationContext,"SetAlarm",Toast.LENGTH_SHORT).show()
+
+                // 通知をタップするとアプリを開く
+//                val intent = Intent(applicationContext, MainActivity::class.java).apply {
+//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                }
+//                val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+
+
             }
         })
 
@@ -140,8 +153,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-// 通知機能
-
+// 通知チャネル
     val CHANNEL_ID = "channel_id"
     val channel_name = "channel_name"
     val channel_description = "channel_description "
@@ -160,14 +172,7 @@ class MainActivity : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-    // 通知の中身
-//    val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.ic_launcher_background)    /// 表示されるアイコン
-//            .setContentTitle("ハローkotlin!!")                  /// 通知タイトル
-//            .setContentText("今日も1日がんばるぞい!")           /// 通知コンテンツ
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)   /// 通知の優先度
 
-//    var notificationId = 0
 }
 
 

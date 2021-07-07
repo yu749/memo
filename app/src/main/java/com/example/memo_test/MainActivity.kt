@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var realm: Realm
     private lateinit var alert: AlertDetails
 
+    companion object {
+        const val EXTRA_TEXT = "com.example.memo_test.MESSAGE"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -93,12 +97,15 @@ class MainActivity : AppCompatActivity() {
                 calendar.add(Calendar.SECOND, 5)
 
                 val alertintent = Intent(applicationContext, AlertDetails::class.java)
+                alertintent.putExtra(EXTRA_TEXT, memoText)
                 val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
                 // メモテキストをセット
-                alertintent.putExtra("TEXT_KEY", memoText)
+
+//                alert.text = memoText
 
                 val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
                 am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
+
                 Toast.makeText(applicationContext,"SetAlarm",Toast.LENGTH_SHORT).show()
 
                 // 通知をタップするとアプリを開く

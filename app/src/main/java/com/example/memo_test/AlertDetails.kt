@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+
 import android.provider.Settings.Global.getString
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -20,12 +21,12 @@ class AlertDetails: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Toast.makeText(context,"Received", Toast.LENGTH_LONG).show()
 
-        val text = intent.getStringExtra("TEXT_KEY") ?: "データがありません！"
+        val text = intent.getStringExtra(MainActivity.EXTRA_TEXT) ?: "データがありません！"
+
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel()
-//        if (text != null) {
-            deliverNotification(context, text)
-//        }
+
+        deliverNotification(context, text)
     }
 
     // 通知を指定した時間に返す
@@ -35,11 +36,11 @@ class AlertDetails: BroadcastReceiver() {
 
         val title = context.getString(R.string.notification_title)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.notification_icon)        /// 表示されるアイコン
-                        .setContentTitle(title)                  /// 通知タイトル
-                        .setContentText(text)             /// 通知コンテンツ
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)  /// 通知の優先度
-                        .setContentIntent(contentPendingIntent)                   /// 通知をタップした際のIntent
+                        .setSmallIcon(R.drawable.notification_icon)       /// 表示されるアイコン
+                        .setContentTitle(title)                           /// 通知タイトル
+                        .setContentText(text)                             /// 通知コンテンツ
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT) /// 通知の優先度
+                        .setContentIntent(contentPendingIntent)           /// 通知をタップした際のIntent
                         .setAutoCancel(true)
 
         var notificationId = 0

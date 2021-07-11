@@ -1,9 +1,6 @@
 package com.example.memo_test
 
-import android.app.AlarmManager
-import android.app.DatePickerDialog
-import android.app.Dialog
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -35,6 +32,7 @@ class DateDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = Date().time
         val context = context // smart cast
@@ -56,23 +54,6 @@ class DateDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
         listener.selectedDate(year, month, dayOfMonth)
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, MainActivity.Year)
-            set(Calendar.MONTH, MainActivity.Month)
-            set(Calendar.DAY_OF_MONTH, MainActivity.Day)
-        }
-        val alertintent = Intent(context, AlertDetails::class.java)
-        alertintent.putExtra(MainActivity.EXTRA_TEXT, MemoText)
-        val alertpending = PendingIntent.getBroadcast(context, 0, alertintent, 0)
-
-        val am: AlarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
-        Toast.makeText(context, MainActivity.Year.toString(), Toast.LENGTH_SHORT).show()
-    }
     companion object {
         private val TAG = DateDialogFragment::class.java.simpleName
     }

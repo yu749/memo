@@ -7,23 +7,20 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import io.realm.Realm
-import java.time.Year
 import java.util.*
 
 class MainActivity : AppCompatActivity(), DateDialogFragment.OnSelectedDateListener, TimeDialogFragment.OnSelectedTimeListener {
@@ -36,9 +33,8 @@ class MainActivity : AppCompatActivity(), DateDialogFragment.OnSelectedDateListe
         var Year: Int = 0
         var Month: Int = 0
         var Day: Int = 0
-        var Hour: Int = 0
-        var Minute: Int = 0
-        var MemoText =""
+        var Second: Int =0
+        var MemoText = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,29 +89,14 @@ class MainActivity : AppCompatActivity(), DateDialogFragment.OnSelectedDateListe
             }
         })
 
-//        var Year: Int
         adapter.setOnItemClickListener(object:MemoListAdapter.OnViewClickListener{
             // APIレベルが19以下のため記述
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int) {
                 // タイマーをセット
                 showDatePickerDialog()
-//                val calendar = Calendar.getInstance().apply {
-//                    set(Calendar.YEAR, Year)
-//                    set(Calendar.MONTH, Month)
-//                    set(Calendar.DAY_OF_MONTH, Day)
-//                    set(Calendar.HOUR_OF_DAY, Hour)
-//                    set(Calendar.MINUTE, Minute)
-//                }
-                MemoText = memoText
-//                val alertintent = Intent(applicationContext, AlertDetails::class.java)
-//                alertintent.putExtra(EXTRA_TEXT, memoText)
-//                val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
-//
-//                val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-//                am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
 
-//                Toast.makeText(applicationContext,Minute.toString(),Toast.LENGTH_SHORT).show()
+                MemoText = memoText
             }
         })
 
@@ -185,20 +166,42 @@ class MainActivity : AppCompatActivity(), DateDialogFragment.OnSelectedDateListe
         datePickerDialogFragment.show(supportFragmentManager, null)
 
     }
-//    private fun showTimePickerDialog() {
-//        val timePickerDialogFragment = TimeDialogFragment()
-//        timePickerDialogFragment.show(supportFragmentManager, null)
-//    }
-
+    private fun showTimePickerDialog() {
+        val timePickerDialogFragment = TimeDialogFragment()
+        timePickerDialogFragment.show(supportFragmentManager, null)
+    }
 
     override fun selectedDate(year: Int, month: Int, date: Int) {
         Year = year
         Month = month
         Day = date
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month)
+            set(Calendar.DAY_OF_MONTH, date)
+        }
+        showTimePickerDialog()
     }
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun selectedTime(hour: Int, minute: Int) {
-        Hour = hour
-        Minute = minute
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, Year)
+            set(Calendar.MONTH, Month)
+            set(Calendar.DAY_OF_MONTH, Day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, Second)
+        }
+
+        val alertintent = Intent(applicationContext, AlertDetails::class.java)
+        alertintent.putExtra(EXTRA_TEXT, MemoText)
+        val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
+
+        val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
+
+        Toast.makeText(applicationContext,"アラームをセットしました",Toast.LENGTH_SHORT).show()
     }
 }
 

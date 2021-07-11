@@ -23,16 +23,22 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import io.realm.Realm
+import java.time.Year
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DateDialogFragment.OnSelectedDateListener, TimeDialogFragment.OnSelectedTimeListener {
 
     private lateinit var adapter: MemoListAdapter
     private lateinit var realm: Realm
-    private lateinit var alert: AlertDetails
 
     companion object {
         const val EXTRA_TEXT = "com.example.memo_test.MESSAGE"
+        var Year: Int = 0
+        var Month: Int = 0
+        var Day: Int = 0
+        var Hour: Int = 0
+        var Minute: Int = 0
+        var MemoText =""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,34 +93,29 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+//        var Year: Int
         adapter.setOnItemClickListener(object:MemoListAdapter.OnViewClickListener{
             // APIレベルが19以下のため記述
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onItemClickListener(view: View, position: Int, memoText: String, itemCount: Int) {
                 // タイマーをセット
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = System.currentTimeMillis()
-                calendar.add(Calendar.SECOND, 5)
-
-                val alertintent = Intent(applicationContext, AlertDetails::class.java)
-                alertintent.putExtra(EXTRA_TEXT, memoText)
-                val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
-                // メモテキストをセット
-
-//                alert.text = memoText
-
-                val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-                am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
-
-                Toast.makeText(applicationContext,"SetAlarm",Toast.LENGTH_SHORT).show()
-
-                // 通知をタップするとアプリを開く
-//                val intent = Intent(applicationContext, MainActivity::class.java).apply {
-//                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                showDatePickerDialog()
+//                val calendar = Calendar.getInstance().apply {
+//                    set(Calendar.YEAR, Year)
+//                    set(Calendar.MONTH, Month)
+//                    set(Calendar.DAY_OF_MONTH, Day)
+//                    set(Calendar.HOUR_OF_DAY, Hour)
+//                    set(Calendar.MINUTE, Minute)
 //                }
-//                val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+                MemoText = memoText
+//                val alertintent = Intent(applicationContext, AlertDetails::class.java)
+//                alertintent.putExtra(EXTRA_TEXT, memoText)
+//                val alertpending = PendingIntent.getBroadcast(applicationContext, 0, alertintent, 0)
+//
+//                val am: AlarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+//                am.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alertpending)
 
-
+//                Toast.makeText(applicationContext,Minute.toString(),Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -159,7 +160,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
 // 通知チャネル
     val CHANNEL_ID = "channel_id"
     val channel_name = "channel_name"
@@ -180,6 +180,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showDatePickerDialog() {
+        val datePickerDialogFragment = DateDialogFragment()
+        datePickerDialogFragment.show(supportFragmentManager, null)
+
+    }
+//    private fun showTimePickerDialog() {
+//        val timePickerDialogFragment = TimeDialogFragment()
+//        timePickerDialogFragment.show(supportFragmentManager, null)
+//    }
+
+
+    override fun selectedDate(year: Int, month: Int, date: Int) {
+        Year = year
+        Month = month
+        Day = date
+    }
+    override fun selectedTime(hour: Int, minute: Int) {
+        Hour = hour
+        Minute = minute
+    }
 }
 
 
